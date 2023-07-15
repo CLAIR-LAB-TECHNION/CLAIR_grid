@@ -4,14 +4,13 @@ from ..utils import get_elements_order
 class Coordinator(ABC):
 
     # init agents and the environment
-    def __init__(self, env, agents, scores_and_metrics=None):
-        self.env = env
+    def __init__(self, env_wrapper, agents, scores_and_metrics=None):
+        self.env_wrapper = env_wrapper
         self.agents = agents
         self.scores_and_metrics = scores_and_metrics
 
     # how to perform the entire run
     def run(self, iteration_limit,  b_log = False):
-
 
         step_data = self.get_initial_data()
 
@@ -45,18 +44,18 @@ class Coordinator(ABC):
 
     # activate the joint action in the environment
     def perform_joint_action(self, joint_action):
-        step_data = self.env.step(joint_action)
+        step_data = self.env_wrapper.step(joint_action)
         return step_data
 
     @abstractmethod
-    def get_joint_action(self, previous_step_data):
+    def get_joint_action(self, step_data):
         pass
 
     @abstractmethod
     def is_done(self, step_data) -> bool:
         pass
 
-    def log_step(self, previous_step_data):
+    def log_step(self, step_data):
         pass
 
     def init_log_data(self):
@@ -74,7 +73,7 @@ class DecentralizedCoordinator(Coordinator):
         self.b_random_order = b_random_order
 
 
-    def get_joint_action(self, previous_step_data):
+    def get_joint_action(self, step_data):
 
         """
         Compute the joint action.
@@ -86,19 +85,11 @@ class DecentralizedCoordinator(Coordinator):
         actions = {}
         for agent_id in agents_order:
             agent = self.agents[agent_id]
-            agent_step_data = self.get_agent_step_data(previous_step_data, agent_id)
+            agent_step_data = agent.get_observation((self.env_wrapper).get_agent_step_data(step_data, agent_id))
             action = agent.get_action(agent_step_data)
             actions[agent_id] = action
 
-        return self.transform_actions(actions)
-
-    @abstractmethod
-    def get_agent_step_data(self, step_data, agent_id):
-        pass
-
-    #used to adapt the action list format to the specific domain
-    def transform_actions(self, actions):
-        return actions
+        return self.env_wrapper.transform_actions(actions)
 
 
 class CentralizedCoordinator(Coordinator):
@@ -107,11 +98,15 @@ class CentralizedCoordinator(Coordinator):
         super().__init__(env, agents)
         self.central_agent = central_agent
 
+    def get_joint_action(self, step_data):
 
-    def get_joint_action(self, previous_step_data):
+        # get the agent's observation
+        step_data= self.central_agent.get_observation(step_data)
 
         # returning a dictionary of actions to be performed by each agent
-        joint_action = self.central_agent.get_action(previous_step_data)
+        joint_action = self.central_agent.get_action(step_data)
+
+        joint_action = self.env_wrapper.transform_actions(joint_action)
 
         return joint_action
 

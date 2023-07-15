@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 
 class Agent(ABC):
 
-    def __init__(self, agent_id):
-      self.agent_id = agent_id
+    @abstractmethod
+    def get_action(self, step_data):
+        pass
 
-    def get_id(self):
-        return self.agent_id
 
     @abstractmethod
-    def get_action(self, previous_step_data):
+    def get_observation(self, step_data):
         pass
+
