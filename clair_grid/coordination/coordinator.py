@@ -12,6 +12,7 @@ class Coordinator(ABC):
     # how to perform the entire run
     def run(self, iteration_limit,  b_log = False):
 
+
         step_data = self.get_initial_data()
 
         if b_log:
