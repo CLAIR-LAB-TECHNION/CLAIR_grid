@@ -1,3 +1,5 @@
+import numpy as np
+
 class EvalConstants:
     # Environmental and simulation parameters
     episodes = 1
@@ -25,3 +27,18 @@ def action_space_to_dict(action_space):
             "shape": action_space.shape,
             "dtype": str(action_space.dtype)
             }
+def get_random_order(elements):
+    """
+    Randomize the order of elements
+    :return: random array of elements
+    """
+    return np.random.permutation(elements)
+
+def get_elements_order(b_random_order, elements):
+
+    if b_random_order:
+        ordered_elements = get_random_order(elements)
+    else:
+        ordered_elements = np.arange(1,len(elements)+1)
+
+    return ordered_elements
