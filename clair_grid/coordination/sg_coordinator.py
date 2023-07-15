@@ -18,7 +18,8 @@ class SGDecentralizedCoordinator(DecentralizedCoordinator):
     def is_done(self, step_data) -> bool:
         return False
 
-
+    def evaluate_step(self, step_data, joint_action):
+        pass
 
 class SGCentralizedCoordinator(CentralizedCoordinator):
 
@@ -38,3 +39,6 @@ class SGCentralizedCoordinator(CentralizedCoordinator):
 
     def is_done(self, step_data) -> bool:
         return False
+
+    def evaluate_step(self, step_data, joint_action):
+        pass

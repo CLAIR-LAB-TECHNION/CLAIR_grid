@@ -10,9 +10,12 @@ class EnvWrapper(ABC):
     def get_agent_step_data(self, step_data, agent_id):
         pass
 
-    @abstractmethod
-    def transform_actions(self, actions):
+    def transform_action_dict_to_env_format(self, actions:dict):
         pass
+
+    def transform_action_env_format_to_dict(self, actions) -> dict:
+        pass
+
 
     @abstractmethod
     def reset(self):
@@ -20,4 +23,7 @@ class EnvWrapper(ABC):
 
     @abstractmethod
     def step(self, action):
+        pass
+
+    def get_KPI_value(kpi_index):
         pass

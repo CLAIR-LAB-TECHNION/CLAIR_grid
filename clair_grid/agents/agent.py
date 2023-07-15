@@ -11,3 +11,5 @@ class Agent(ABC):
     def get_observation(self, step_data):
         pass
 
+    def perform_training_step(self, action, step_data):
+        pass

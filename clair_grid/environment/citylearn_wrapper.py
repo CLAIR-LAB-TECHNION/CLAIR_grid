@@ -13,11 +13,20 @@ class CityLearnWrapper(EnvWrapper):
         agent_step_data = [observations[agent_id - 1], rewards[agent_id - 1], done]
         return agent_step_data
 
-
-    def transform_actions(self, actions):
-        # transform the dictionary to an ordered list
+    def transform_action_dict_to_env_format(self, actions:dict):
         action_list = [None] * len(actions)
         for agent_id in actions.keys():
             action_list[agent_id - 1] = [actions[agent_id]]
 
         return action_list
+
+    def transform_action_env_format_to_dict(self, actions) -> dict:
+        action_dict = {}
+        for agent_index in range(0,len(actions)):
+            agent_id = agent_index+1
+            action_dict[agent_id] = actions[agent_index]
+
+        return action_dict
+
+    def get_KPI_value(self, kpi_index, agent_index = None):
+        pass
