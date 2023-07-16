@@ -24,6 +24,3 @@ class EnvWrapper(ABC):
     @abstractmethod
     def step(self, action):
         pass
-
-    def get_KPI_value(kpi_index):
-        pass

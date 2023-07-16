@@ -28,5 +28,5 @@ class CityLearnWrapper(EnvWrapper):
 
         return action_dict
 
-    def get_KPI_value(self, kpi_index, agent_index = None):
+    def get_kpi_value(self, kpi_index, agent_index = None):
         pass

@@ -11,12 +11,14 @@ class Coordinator(ABC):
         self.evalulation_log = None
 
     # how to perform the entire run
-    def run(self, iteration_limit,  b_log = False, b_train = False, evaluation_func= None):
+    def run(self, iteration_limit, b_log = False, b_train = False, b_evaluate=False, step_evaluation_func= None, agg_evaluation_func= None):
 
         step_data = self.get_initial_data()
 
         if b_log:
             self.log_step(step_data)
+        if b_evaluate:
+            evaluation_data = {}
 
         iteration_counter = 0
         done = False
@@ -33,8 +35,8 @@ class Coordinator(ABC):
                 self.log_step(step_data)
 
             # evaluate performance
-            if evaluation_func:
-                evaluation_func(self.env_wrapper, step_data, joint_action)
+            if step_evaluation_func:
+                evaluation_data[iteration_counter]=self.evaluate_step(step_evaluation_func, step_data, joint_action)
 
             # if the agent is training, update its policy
             if b_train:
@@ -42,6 +44,12 @@ class Coordinator(ABC):
 
             # check if done
             done = self.is_done(step_data)
+
+        # after training is done - evaluate performance
+        if b_evaluate:
+            return self.evaluate_agg(agg_evaluation_func, evaluation_data)
+        else:
+            return None
 
     # how to perform a single iteration
     def run_step(self, step_data):
@@ -56,8 +64,11 @@ class Coordinator(ABC):
         step_data = self.env_wrapper.step(joint_action)
         return step_data
 
-    def evaluate_step(self, evaluation_func, step_data, joint_action):
-        evaluation_func(self.env_wrapper, step_data, joint_action)
+    def evaluate_step(self, evaluation_func, step_data, joint_action)->dict:
+        return evaluation_func(self.env_wrapper, step_data, joint_action)
+
+    def evaluate_agg(self, evaluation_func, evaluation_data)->dict:
+        return evaluation_func(evaluation_data)
 
     def perform_training_step(self, step_data, joint_action):
         pass
@@ -106,8 +117,6 @@ class DecentralizedCoordinator(Coordinator):
 
         return self.env_wrapper.transform_action_dict_to_env_format(actions)
 
-    def evaluate_step(self, step_data, joint_action):
-        pass
 
     def perform_training_step(self, step_data, joint_action):
 
@@ -136,8 +145,39 @@ class CentralizedCoordinator(Coordinator):
 
         return joint_action
 
-    def evaluate_step(self, step_data, joint_action):
-        pass
-
     def perform_training_step(self, step_data, joint_action):
         self.central_agent.perform_training_step(step_data, joint_action)
+
+
+
+class DecentralizedWithComCoordinator(DecentralizedCoordinator):
+    def __init__(self, env, agents, b_random_order= True):
+
+        super().__init__(env, agents, b_random_order)
+
+
+    def get_joint_action(self, step_data):
+
+        """
+        Compute the joint action.
+        """
+        agents_ids = self.get_ids()
+        agents_order = get_elements_order(self.b_random_order, agents_ids)
+
+        signal = self.get_shared_com_signal(step_data)
+
+        # returning a dictionary of actions to be performed by each agent
+        actions = {}
+        for agent_id in agents_order:
+            agent = self.agents[agent_id]
+            agent_step_data = agent.get_observation((self.env_wrapper).get_agent_step_data(step_data, agent_id))
+            agent_step_data = [agent_step_data, signal]
+            action = agent.get_action(agent_step_data)
+            actions[agent_id] = action
+
+        return self.env_wrapper.transform_action_dict_to_env_format(actions)
+
+
+    @abstractmethod
+    def get_shared_com_signal(self, step_data):
+        pass
