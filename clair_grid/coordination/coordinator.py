@@ -43,7 +43,7 @@ class Coordinator(ABC):
                 self.perform_training_step(step_data, joint_action)
 
             # check if done
-            done = self.is_done(step_data)
+            done = self.env_wrapper.is_done(step_data)
 
         # after training is done - evaluate performance
         if b_evaluate:
@@ -75,10 +75,6 @@ class Coordinator(ABC):
 
     @abstractmethod
     def get_joint_action(self, step_data):
-        pass
-
-    @abstractmethod
-    def is_done(self, step_data) -> bool:
         pass
 
     def log_step(self, step_data):
