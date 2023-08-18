@@ -43,7 +43,7 @@ class Coordinator(ABC):
                 self.perform_training_step(step_data, joint_action)
 
             # check if done
-            done = self.env_wrapper.is_done(step_data)
+            done = self.is_done(step_data)
 
         # after training is done - evaluate performance
         if b_evaluate:
@@ -85,6 +85,10 @@ class Coordinator(ABC):
 
     def get_ids(self):
         pass
+
+    def is_done(self, step_data):
+        done = step_data[2]
+        return done
 
 
 class DecentralizedCoordinator(Coordinator):
