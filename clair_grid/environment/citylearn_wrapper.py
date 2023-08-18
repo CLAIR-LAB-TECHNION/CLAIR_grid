@@ -31,6 +31,4 @@ class CityLearnWrapper(EnvWrapper):
     def get_kpi_value(self, kpi_index, agent_index = None):
         pass
 
-    def is_done(self, step_data):
-        done = step_data[2]
-        return done
+
