@@ -77,10 +77,6 @@ class Coordinator(ABC):
     def get_joint_action(self, step_data):
         pass
 
-    @abstractmethod
-    def is_done(self, step_data) -> bool:
-        pass
-
     def log_step(self, step_data):
         pass
 
@@ -89,6 +85,10 @@ class Coordinator(ABC):
 
     def get_ids(self):
         pass
+
+    def is_done(self, step_data):
+        done = step_data[2]
+        return done
 
 
 class DecentralizedCoordinator(Coordinator):

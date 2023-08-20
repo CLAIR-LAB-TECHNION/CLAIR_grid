@@ -15,10 +15,6 @@ class SGDecentralizedCoordinator(DecentralizedCoordinator):
         step_data = self.env_wrapper.step(self.init_joint_action)
         return step_data
 
-    def is_done(self, step_data) -> bool:
-        return False
-
-
 
 
 class SGCentralizedCoordinator(CentralizedCoordinator):
@@ -37,8 +33,6 @@ class SGCentralizedCoordinator(CentralizedCoordinator):
         step_data = self.env_wrapper.step(self.init_joint_action)
         return step_data
 
-    def is_done(self, step_data) -> bool:
-        return False
 
 
 class SGDecentralizedWithComCoordinator(DecentralizedWithComCoordinator):
@@ -57,8 +51,7 @@ class SGDecentralizedWithComCoordinator(DecentralizedWithComCoordinator):
         step_data = self.env_wrapper.step(self.init_joint_action)
         return step_data
 
-    def is_done(self, step_data) -> bool:
-        return False
+
 
     def get_shared_com_signal(self, step_data):
 
