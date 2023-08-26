@@ -24,3 +24,6 @@ class EnvWrapper(ABC):
     @abstractmethod
     def step(self, action):
         pass
+    @abstractmethod
+    def is_done(self, step_data):
+        pass

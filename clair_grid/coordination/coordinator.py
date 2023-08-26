@@ -87,8 +87,7 @@ class Coordinator(ABC):
         pass
 
     def is_done(self, step_data):
-        done = step_data[2]
-        return done
+        return self.env_wrapper.is_done(step_data)
 
 
 class DecentralizedCoordinator(Coordinator):
